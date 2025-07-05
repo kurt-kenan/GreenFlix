@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Ayarlar";
+}
+
+<h2>Ayarlar</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<form method="post" class="mt-4">
+    <div class="mb-3">
+        <label for="newEmail" class="form-label">Yeni E-posta</label>
+        <input type="email" name="newEmail" id="newEmail" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label for="newPassword" class="form-label">Yeni Şifre</label>
+        <input type="password" name="newPassword" id="newPassword" class="form-control" required minlength="6" />
+    </div>
+    <button type="submit" class="btn btn-success">Güncelle</button>
+</form>

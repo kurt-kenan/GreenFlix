@@ -1,0 +1,234 @@
+﻿@model GreenFlix.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<style>
+    .register-page {
+        background: linear-gradient(135deg, #121212 0%, #1a2a1a 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 450px;
+        background-color: rgba(30, 42, 32, 0.9);
+        border: 1px solid #3a6b35;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        padding: 2.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .register-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+    .register-title {
+        color: #28a745;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+        .register-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #28a745, transparent);
+        }
+
+    .form-label {
+        color: #28a745;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-control {
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid #3a6b35;
+        color: #f8f9fa;
+        padding: 12px 15px;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+            color: #fff;
+        }
+
+    .password-strength {
+        height: 4px;
+        background: #343a40;
+        margin-top: 8px;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .register-card .btn-register {
+        background-color: #28a745;
+        border: none;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        transition: all 0.3s;
+        width: 100%;
+    }
+
+        .register-card .btn-register:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .register-card .btn-register:active {
+            transform: translateY(0);
+        }
+
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .footer-links {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(58, 107, 53, 0.5);
+    }
+
+    .footer-link {
+        color: #6c757d;
+        text-decoration: none;
+        transition: color 0.3s;
+        font-size: 0.9rem;
+    }
+
+        .footer-link:hover {
+            color: #28a745;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 576px) {
+        .register-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="register-page">
+    <div class="register-card shadow-lg">
+        <h2 class="register-title">
+            <i class="fas fa-user-plus"></i> GreenFlix Kayıt
+        </h2>
+
+        <form asp-action="Register" method="post" novalidate>
+            <div class="mb-4">
+                <label asp-for="Username" class="form-label">
+                    <i class="fas fa-user"></i> Kullanıcı Adı
+                </label>
+                <input asp-for="Username" class="form-control" placeholder="Kullanıcı adınızı girin" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Email" class="form-label">
+                    <i class="fas fa-envelope"></i> E-posta
+                </label>
+                <input asp-for="Email" class="form-control" placeholder="E-posta adresinizi girin" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">
+                    <i class="fas fa-lock"></i> Şifre
+                </label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Şifrenizi girin" id="passwordInput" />
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                </div>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">
+                    <i class="fas fa-lock"></i> Şifre Tekrar
+                </label>
+                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Şifrenizi tekrar girin" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-register">
+                <i class="fas fa-user-check me-2"></i> Kayıt Ol
+            </button>
+        </form>
+
+        <div class="footer-links">
+            <span>Zaten hesabınız var mı?</span>
+            <a href="@Url.Action("Login", "Account")" class="footer-link ms-2">
+                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Şifre güç göstergesi
+        document.getElementById('passwordInput').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            let strength = 0;
+
+            if (password.length > 0) strength += 1;
+            if (password.length >= 8) strength += 1;
+            if (/[A-Z]/.test(password)) strength += 1;
+            if (/[0-9]/.test(password)) strength += 1;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+            // Renk ve genişlik ayarla
+            const width = strength * 20;
+            let color = '#dc3545'; // Kırmızı
+
+            if (strength >= 3) color = '#ffc107'; // Sarı
+            if (strength >= 5) color = '#28a745'; // Yeşil
+
+            strengthBar.style.width = width + '%';
+            strengthBar.style.backgroundColor = color;
+        });
+
+        // Form gönderim animasyonu
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Kayıt Olunuyor...';
+            btn.disabled = true;
+        });
+    </script>
+}

@@ -1,0 +1,328 @@
+﻿@model List<GreenFlix.Models.Movie>
+
+@{
+    ViewData["Title"] = "Admin Panel - Filmler";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --danger: #ff3860;
+            --dark-bg: #121212;
+            --darker-bg: #1a1a1a;
+            --card-bg: #1e1e1e;
+            --table-bg: #2d2d2d;
+            --border-color: #333;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 2.5rem;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .admin-container::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, var(--primary), transparent);
+            }
+
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+            .page-title::after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 150px;
+                height: 3px;
+                background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            }
+
+        /* Tablo Stilleri */
+        .movie-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+            margin-bottom: 2rem;
+        }
+
+            .movie-table thead th {
+                background-color: rgba(0, 255, 136, 0.1);
+                color: var(--primary);
+                padding: 1rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 0.85rem;
+                letter-spacing: 0.5px;
+                border: none;
+                position: sticky;
+                top: 0;
+                z-index: 10;
+            }
+
+            .movie-table tbody tr {
+                background-color: var(--darker-bg);
+                transition: all 0.3s ease;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+                .movie-table tbody tr:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 15px rgba(0, 255, 136, 0.2);
+                }
+
+            .movie-table td {
+                padding: 1.2rem;
+                vertical-align: middle;
+                border-top: 1px solid var(--border-color);
+                border-bottom: 1px solid var(--border-color);
+            }
+
+                .movie-table td:first-child {
+                    border-left: 1px solid var(--border-color);
+                    border-top-left-radius: 8px;
+                    border-bottom-left-radius: 8px;
+                }
+
+                .movie-table td:last-child {
+                    border-right: 1px solid var(--border-color);
+                    border-top-right-radius: 8px;
+                    border-bottom-right-radius: 8px;
+                }
+
+        /* Buton Stilleri */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #121212;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+            }
+
+        .btn-edit {
+            background-color: rgba(0, 136, 255, 0.2);
+            color: #00a1ff;
+        }
+
+            .btn-edit:hover {
+                background-color: rgba(0, 136, 255, 0.3);
+                color: #00a1ff;
+                transform: translateY(-2px);
+            }
+
+        .btn-delete {
+            background-color: rgba(255, 56, 96, 0.2);
+            color: var(--danger);
+        }
+
+            .btn-delete:hover {
+                background-color: rgba(255, 56, 96, 0.3);
+                color: var(--danger);
+                transform: translateY(-2px);
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-movie-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.8rem;
+            background-color: var(--primary);
+            color: #121212;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+            .add-movie-btn:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+                color: #121212;
+                text-decoration: none;
+            }
+
+        /* Responsive Tasarım */
+        @@media (max-width: 992px) {
+            .admin-container
+
+        {
+            padding: 1.5rem;
+            margin: 1.5rem;
+        }
+
+        .movie-table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        }
+
+        /* Rating Stili */
+        .rating-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            background-color: rgba(255, 215, 0, 0.2);
+            color: gold;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container animate__animated animate__fadeIn">
+        <h1 class="page-title">FİLM YÖNETİM PANELİ</h1>
+
+        <table class="movie-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>FİLM ADI</th>
+                    <th>TÜR</th>
+                    <th>VİZYON TARİHİ</th>
+                    <th>PUAN</th>
+                    <th>İŞLEMLER</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var movie in Model)
+                {
+                    <tr>
+                        <td>@movie.Id</td>
+                        <td>
+                            <strong>@movie.Title</strong>
+                        </td>
+                        <td>@movie.Genre</td>
+                        <td>@movie.ReleaseDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <span class="rating-badge">
+                                <i class="fas fa-star"></i> @movie.Rating
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="@Url.Action("Edit", "Admin", new { id = movie.Id })" class="btn btn-edit">
+                                    <i class="fas fa-edit"></i> Düzenle
+                                </a>
+                                <a href="@Url.Action("VideoEkle", "Admin", new { id = movie.Id })" class="btn btn-primary">
+                                    <i class="fas fa-video"></i> Video Ekle
+                                </a>
+                                <form asp-action="Delete" asp-controller="Admin" asp-route-id="@movie.Id" method="post" onsubmit="return confirm('Bu filmi silmek istediğinize emin misiniz?');">
+                                    <button type="submit" class="btn btn-delete">
+                                        <i class="fas fa-trash-alt"></i> Sil
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a href="@Url.Action("FilmEkle", "Admin")" class="add-movie-btn">
+            <i class="fas fa-plus-circle"></i> YENİ FİLM EKLE
+        </a>
+    </div>
+
+    <script>
+        // Silme işlemi onayı için
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Bu filmi silmek istediğinize emin misiniz?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // Tablo satırlarına tıklanabilirlik ekleme
+        document.querySelectorAll('.movie-table tbody tr').forEach(row => {
+            row.addEventListener('click', function(e) {
+                // Eğer bir butona tıklanmadıysa
+                if (!e.target.closest('button, a')) {
+                    const id = this.querySelector('td:first-child').textContent;
+                    window.location.href = `@Url.Action("Edit", "Admin")/${id}`;
+                }
+            });
+
+            // Hover efekti için cursor pointer
+            row.style.cursor = 'pointer';
+        });
+    </script>
+</body>
+</html>

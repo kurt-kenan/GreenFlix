@@ -1,0 +1,39 @@
+﻿@model GreenFlix.Models.Movie
+
+<h2>Fragman & Poster Yükle - @Model.Title</h2>
+
+<form asp-action="VideoEkle" asp-controller="Admin" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Fragman Dosyası (MP4, MOV, WEBM)</label>
+        <input type="file" name="VideoFile" accept="video/mp4,video/mov,video/webm" class="form-control" />
+        <span asp-validation-for="VideoUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Poster Dosyası (JPG, PNG, GIF)</label>
+        <input type="file" name="PosterFile" accept="image/jpeg,image/png,image/gif" class="form-control" />
+        <span asp-validation-for="PosterUrl" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        <i class="fas fa-upload"></i> Yükle
+    </button>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Geri Dön</a>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.VideoUrl))
+{
+    <h3>Mevcut Fragman</h3>
+    <video width="100%" controls>
+        <source src="@Model.VideoUrl" type="video/mp4" />
+        Tarayıcınız video etiketini desteklemiyor.
+    </video>
+}
+
+@if (!string.IsNullOrEmpty(Model.PosterUrl))
+{
+    <h3>Mevcut Poster</h3>
+    <img src="@Model.PosterUrl" alt="Poster" style="max-width: 200px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);" />
+}

@@ -1,0 +1,270 @@
+﻿@model GreenFlix.Models.Movie
+
+@{
+    ViewData["Title"] = "Film Ekle";
+}
+
+<style>
+    .add-movie-page {
+        background-color: #121212;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+
+    .add-movie-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #1e1e1e;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        border: 1px solid #28a745;
+    }
+
+    .page-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        color: #28a745;
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #28a745, transparent);
+        }
+
+    .form-label {
+        color: #28a745;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-control {
+        background-color: #2d2d2d;
+        border: 1px solid #343a40;
+        color: #f8f9fa;
+        padding: 12px 15px;
+        border-radius: 6px;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            background-color: #2d2d2d;
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+            color: #fff;
+        }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .file-upload {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-upload-btn {
+        border: 2px dashed #28a745;
+        border-radius: 6px;
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s;
+    }
+
+        .file-upload-btn:hover {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+    .file-upload-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-upload-text {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .btn-submit {
+        background-color: #28a745;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        border-radius: 6px;
+        margin-top: 1rem;
+        transition: all 0.3s;
+        width: 100%;
+    }
+
+        .btn-submit:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .preview-container {
+        margin-top: 15px;
+        text-align: center;
+        display: none;
+    }
+
+    .preview-image {
+        max-width: 200px;
+        max-height: 300px;
+        border-radius: 5px;
+        border: 1px solid #343a40;
+    }
+
+    @@media (max-width: 768px) {
+        .add-movie-container {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="add-movie-page">
+    <div class="container">
+        <div class="add-movie-container">
+            <h2 class="page-title">
+                <i class="fas fa-film"></i> Film Ekle
+            </h2>
+
+            <form asp-action="FilmEkle" method="post" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label asp-for="Title" class="form-label">
+                        <i class="fas fa-heading"></i> Film Başlığı
+                    </label>
+                    <input asp-for="Title" class="form-control" placeholder="Örnek: The Shawshank Redemption" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label">
+                        <i class="fas fa-align-left"></i> Açıklama
+                    </label>
+                    <textarea asp-for="Description" class="form-control" rows="5"
+                              placeholder="Filmin konusunu ve öne çıkan özelliklerini yazın"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="fas fa-image"></i> Poster Resmi
+                    </label>
+                    <div class="file-upload">
+                        <div class="file-upload-btn">
+                            <i class="fas fa-cloud-upload-alt fa-2x mb-3" style="color: #28a745;"></i>
+                            <p>Poster resmini sürükleyip bırakın veya tıklayarak seçin</p>
+                            <p class="file-upload-text">Önerilen boyut: 600x900 px (JPEG veya PNG)</p>
+                        </div>
+                        <input type="file" class="file-upload-input" name="PosterFile" id="posterUpload" accept="image/*" />
+                    </div>
+                    <div class="preview-container" id="previewContainer">
+                        <img id="previewImage" class="preview-image" src="#" alt="Poster önizleme" />
+                    </div>
+                    <span asp-validation-for="PosterUrl" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Genre" class="form-label">
+                        <i class="fas fa-tags"></i> Tür
+                    </label>
+                    <input asp-for="Genre" class="form-control" placeholder="Örnek: Dram, Bilim Kurgu, Aksiyon" />
+                    <span asp-validation-for="Genre" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ReleaseDate" class="form-label">
+                        <i class="fas fa-calendar-alt"></i> Vizyon Tarihi
+                    </label>
+                    <input asp-for="ReleaseDate" type="date" class="form-control" />
+                    <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="ReleaseYear" class="form-label">
+                        <i class="fas fa-calendar"></i> Yayın Yılı
+                    </label>
+                    <input asp-for="ReleaseYear" class="form-control" type="number" min="1900" max="2100" />
+                    <span asp-validation-for="ReleaseYear" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Rating" class="form-label">
+                        <i class="fas fa-star"></i> Puan (0.0 - 10.0)
+                    </label>
+                    <input asp-for="Rating" class="form-control" type="number" min="0" max="10" step="0.1" />
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-plus-circle"></i> Film Ekle
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Poster önizleme
+        document.getElementById('posterUpload').addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // Form gönderim animasyonu
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ekleniyor...';
+            btn.disabled = true;
+        });
+    </script>
+}

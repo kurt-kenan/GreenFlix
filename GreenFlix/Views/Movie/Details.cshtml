@@ -1,0 +1,693 @@
+﻿@model GreenFlix.Models.MovieWithWatchStatusViewModel
+
+@{
+    ViewData["Title"] = Model.Movie.Title;
+}
+
+<style>
+    :root {
+        --primary: #00df9a;
+        --primary-dark: #00c78b;
+        --dark: #0f0f0f;
+        --darker: #070707;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --danger: #ff4d4d;
+        --comment-bg: #1a1a1a;
+    }
+
+    .movie-detail-container {
+        background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+        min-height: 100vh;
+        color: var(--light);
+        font-family: 'Poppins', sans-serif;
+        padding-bottom: 5rem;
+    }
+
+    .movie-main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 15px;
+    }
+
+    .movie-poster-container {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 223, 154, 0.25);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        max-width: 400px;
+        margin-bottom: 2rem;
+    }
+
+    .movie-poster {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    .movie-poster-container:hover .movie-poster {
+        transform: scale(1.05);
+    }
+
+    .movie-title {
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 15px;
+        font-size: 2.5rem;
+        line-height: 1.2;
+        text-shadow: 0 2px 10px rgba(0, 223, 154, 0.3);
+    }
+
+        .movie-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            border-radius: 2px;
+        }
+
+    .movie-meta {
+        margin-bottom: 2rem;
+        background: rgba(30, 30, 30, 0.6);
+        padding: 1.5rem;
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+    }
+
+    .movie-meta-item {
+        display: flex;
+        margin-bottom: 1rem;
+        align-items: center;
+    }
+
+    .movie-meta-label {
+        font-weight: 600;
+        color: var(--primary);
+        min-width: 140px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .movie-meta-value {
+        flex: 1;
+        font-weight: 300;
+    }
+
+    .movie-description {
+        line-height: 1.8;
+        margin-bottom: 2.5rem;
+        background: rgba(15, 15, 15, 0.7);
+        padding: 1.8rem;
+        border-radius: 12px;
+        border-left: 4px solid var(--primary);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 3rem;
+    }
+
+    .btn {
+        border: none;
+        padding: 12px 28px;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease-out;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-watched {
+        background: var(--primary);
+        color: var(--darker);
+    }
+
+        .btn-watched:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 223, 154, 0.4);
+        }
+
+        .btn-watched:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+    .btn-unwatched {
+        background: transparent;
+        border: 2px solid var(--danger);
+        color: var(--danger);
+    }
+
+        .btn-unwatched:hover {
+            background: var(--danger);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+    .btn-back {
+        background: transparent;
+        border: 2px solid var(--gray);
+        color: var(--gray);
+    }
+
+        .btn-back:hover {
+            background: var(--gray);
+            color: white;
+        }
+
+    /* Trailer Section */
+    .trailer-section {
+        width: 100%;
+        background: var(--darker);
+        padding: 4rem 0;
+        margin-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .trailer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .video-wrapper {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        background: #000;
+    }
+
+    .video-player {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .section-title {
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.8rem;
+    }
+
+    /* Comments Section */
+    .comments-section {
+        max-width: 1200px;
+        margin: 4rem auto 0;
+        padding: 0 15px;
+    }
+
+    .comments-title {
+        font-size: 1.8rem;
+        color: var(--primary);
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+        .comments-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+    .comment-form {
+        background: var(--comment-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .comment-textarea {
+        background: rgba(30, 30, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        width: 100%;
+        min-height: 120px;
+        resize: none;
+        transition: all 0.3s;
+    }
+
+        .comment-textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 223, 154, 0.2);
+        }
+
+    .btn-primary {
+        background: var(--primary);
+        color: var(--darker);
+        border: none;
+        padding: 10px 25px;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+    .login-prompt {
+        background: var(--comment-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .login-link {
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .comment-list {
+        margin-top: 2rem;
+    }
+
+    .comment {
+        background: var(--comment-bg);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-left: 3px solid var(--primary);
+        transition: transform 0.3s;
+    }
+
+        .comment:hover {
+            transform: translateY(-3px);
+        }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .comment-user {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .comment-date {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+
+    .comment-text {
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Rating Section */
+    .rating-section {
+        margin: 2rem 0;
+        background: rgba(30, 30, 30, 0.6);
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .rating-stars {
+        display: flex;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    .star {
+        color: var(--gray);
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: all 0.2s;
+    }
+
+        .star:hover, .star.active {
+            color: #ffc107;
+            transform: scale(1.1);
+        }
+
+    @@media (max-width: 768px) {
+        .movie-title {
+            font-size: 2rem;
+        }
+
+        .movie-meta-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .movie-meta-label {
+            margin-bottom: 5px;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .favorite-icon-form {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 10;
+    }
+
+    .favorite-btn {
+        background: none;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 1.8rem;
+        color: #bbb;
+        transition: color 0.3s ease;
+    }
+
+        .favorite-btn:hover i {
+            color: #ff5b5b;
+        }
+
+        .favorite-btn i.favorited {
+            color: #ff5b5b;
+        }
+
+    .favorite-ribbon {
+        position: absolute;
+        top: 20px;
+        left: -8px;
+        background: #FFC107;
+        color: #333;
+        padding: 6px 15px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transform: translateX(-100%);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        z-index: 5;
+    }
+
+        .favorite-ribbon::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            border-width: 5px 5px 0 0;
+            border-style: solid;
+            border-color: #d4a506 transparent transparent transparent;
+        }
+
+    .movie-poster-container:hover .favorite-ribbon {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .favorite-ribbon i {
+        color: #333;
+    }
+
+    /* Favori butonuna hover efekti ekleme */
+    .favorite-btn:hover i:not(.favorited) {
+        color: #ff5b5b;
+        transform: scale(1.1);
+    }
+
+    .favorite-btn i.favorited {
+        color: #ff5b5b;
+        text-shadow: 0 0 10px rgba(255, 91, 91, 0.7);
+        animation: pulse 1.5s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+</style>
+
+<div class="movie-detail-container">
+    <!-- Main content -->
+    <div class="movie-main-content">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="movie-poster-container">
+                    <img src="@( !string.IsNullOrEmpty(Model.Movie.PosterUrl) ? Model.Movie.PosterUrl : "/images/default-poster.jpg" )"
+                         alt="@Model.Movie.Title"
+                         class="movie-poster" />
+
+                    @if (Model.IsFavorited)
+                    {
+                        <div class="favorite-ribbon">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Favorilere Eklendi</span>
+                        </div>
+                    }
+
+                    <form id="favoriteForm" method="post" class="favorite-icon-form">
+                        <input type="hidden" name="id" value="@Model.Movie.Id" />
+                        <button type="submit" class="favorite-btn" title="Favorilere ekle/kaldır">
+                            <i class="fas fa-heart @(Model.IsFavorited ? "favorited" : "")"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <h1 class="movie-title">@Model.Movie.Title</h1>
+
+                <div class="movie-meta">
+                    <div class="movie-meta-item">
+                        <span class="movie-meta-label">
+                            <i class="fas fa-film"></i> Tür:
+                        </span>
+                        <span class="movie-meta-value">@Model.Movie.Genre</span>
+                    </div>
+
+                    <div class="movie-meta-item">
+                        <span class="movie-meta-label">
+                            <i class="fas fa-calendar-alt"></i> Vizyon Tarihi:
+                        </span>
+                        <span class="movie-meta-value">@Model.Movie.ReleaseDate.ToString("dd MMMM yyyy")</span>
+                    </div>
+
+                    <div class="movie-meta-item">
+                        <span class="movie-meta-label">
+                            <i class="fas fa-star"></i> IMDB Puanı:
+                        </span>
+                        <span class="movie-meta-value">
+                            @(Model.Movie.Rating > 0 ? Model.Movie.Rating.ToString("0.0") : "Puan yok")
+                        </span>
+                    </div>
+                </div>
+
+                <div class="movie-description">
+                    <h5 class="section-title">
+                        <i class="fas fa-align-left"></i> Konu
+                    </h5>
+                    <p>@(string.IsNullOrEmpty(Model.Movie.Description?.Trim()) ? "Bu film için açıklama bulunmamaktadır." : Model.Movie.Description)</p>
+                </div>
+
+                <div class="action-buttons">
+                    <form asp-action="MarkAsWatched" method="post">
+                        <input type="hidden" name="id" value="@Model.Movie.Id" />
+                        @if (Model.IsWatched)
+                        {
+                            <button class="btn btn-watched" disabled>
+                                <i class="fas fa-check-circle"></i> İzlediniz
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-watched">
+                                <i class="fas fa-eye"></i> İzledim
+                            </button>
+                        }
+                    </form>
+
+                    @if (Model.IsWatched)
+                    {
+                        <form asp-action="MarkAsUnwatched" method="post">
+                            <input type="hidden" name="id" value="@Model.Movie.Id" />
+                            <button type="submit" class="btn btn-unwatched">
+                                <i class="fas fa-times-circle"></i> İzlemeyi Kaldır
+                            </button>
+                        </form>
+                    }
+
+                    <a href="@Url.Action("Index", "Movie")" class="btn btn-back">
+                        <i class="fas fa-arrow-left"></i> Geri Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-width trailer section -->
+    <div class="trailer-section">
+        <div class="trailer-container">
+            <h2 class="section-title">
+                <i class="fas fa-play-circle"></i> Fragman
+            </h2>
+
+            @if (!string.IsNullOrEmpty(Model.Movie.VideoUrl))
+            {
+                <div class="video-wrapper">
+                    <video class="video-player" controls controlsList="nodownload" poster="@Model.Movie.PosterUrl">
+                        <source src="@Model.Movie.VideoUrl" type="video/mp4">
+                        Tarayıcınız video etiketini desteklemiyor.
+                    </video>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-secondary">
+                    <i class="fas fa-video-slash me-2"></i> Bu film için fragman bulunmamaktadır.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <h3 class="comments-title">Yorumlar (@Model.Comments.Count)</h3>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="comment-form">
+                <form asp-action="AddComment" method="post">
+                    <input type="hidden" name="movieId" value="@Model.Movie.Id" />
+                    <textarea name="text" rows="3" placeholder="Filme dair düşüncelerinizi paylaşın..." required class="comment-textarea"></textarea>
+                    <button type="submit" class="btn btn-primary mt-3">Yorumu Gönder</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="login-prompt">
+                <p>Yorum yapmak için <a href="@Url.Action("Login", "Account")" class="login-link">giriş yapın</a></p>
+            </div>
+        }
+
+        <div class="comment-list">
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-user">@comment.User.Username</span>
+                        <span class="comment-date">@comment.CreatedAt.ToString("dd MMMM yyyy HH:mm")</span>
+                    </div>
+                    <p class="comment-text">@comment.Text</p>
+                </div>
+            }
+
+            @if (Model.Comments.Count == 0)
+            {
+                <div class="alert alert-secondary text-center">
+                    <i class="fas fa-comment-slash me-2"></i> Henüz yorum yapılmamış
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Star rating functionality
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                // AJAX call to save rating
+                fetch('/Movie/RateMovie', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        movieId: @Model.Movie.Id,
+                        rating: rating
+                    })
+                }).then(response => {
+                    if (response.ok) {
+                        // Update UI
+                        document.querySelectorAll('.star').forEach(s => {
+                            s.classList.remove('active');
+                            if (s.getAttribute('data-rating') <= rating) {
+                                s.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+                document.getElementById("favoriteForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            fetch("/Movie/ToggleFavorite", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                const icon = this.querySelector("i");
+                if (data.isFavorite) {
+                    icon.classList.add("favorited");
+                } else {
+                    icon.classList.remove("favorited");
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    </script>
+}

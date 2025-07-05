@@ -1,0 +1,180 @@
+﻿@model GreenFlix.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<style>
+    .login-page {
+        background: linear-gradient(135deg, #121212 0%, #1a2a1a 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        background-color: rgba(30, 42, 32, 0.9);
+        border: 1px solid #3a6b35;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        padding: 2.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+    .login-title {
+        color: #28a745;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+        .login-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #28a745, transparent);
+        }
+
+    .form-label {
+        color: #28a745;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-control {
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid #3a6b35;
+        color: #f8f9fa;
+        padding: 12px 15px;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+        .form-control:focus {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+            color: #fff;
+        }
+
+    .btn-login {
+        background-color: #28a745;
+        border: none;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        margin-top: 1rem;
+        transition: all 0.3s;
+        width: 100%;
+    }
+
+        .btn-login:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .footer-links {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(58, 107, 53, 0.5);
+    }
+
+    .footer-link {
+        color: #6c757d;
+        text-decoration: none;
+        transition: color 0.3s;
+        font-size: 0.9rem;
+    }
+
+        .footer-link:hover {
+            color: #28a745;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 576px) {
+        .login-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="login-page">
+    <div class="login-card shadow-lg">
+        <h2 class="login-title">
+            <i class="fas fa-film"></i> GreenFlix Giriş
+        </h2>
+
+        <form asp-action="Login" method="post" novalidate>
+            <div class="mb-4">
+                <label asp-for="Username" class="form-label">
+                    <i class="fas fa-user"></i> Kullanıcı Adı
+                </label>
+                <input asp-for="Username" class="form-control" placeholder="Kullanıcı adınızı girin" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">
+                    <i class="fas fa-lock"></i> Şifre
+                </label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Şifrenizi girin" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i> Giriş Yap
+            </button>
+        </form>
+
+        <div class="footer-links">
+            <a href="@Url.Action("Register", "Account")" class="footer-link me-3">
+                <i class="fas fa-user-plus"></i> Hesap Oluştur
+            </a>
+            <a href="@Url.Action("ForgotPassword", "Account")" class="footer-link">
+                <i class="fas fa-key"></i> Şifremi Unuttum
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Form gönderim animasyonu
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const btn = this.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Giriş Yapılıyor...';
+            btn.disabled = true;
+        });
+    </script>
+}

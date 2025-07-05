@@ -1,0 +1,413 @@
+﻿@model List<GreenFlix.Web.Models.MovieViewModel>
+
+@{
+    ViewData["Title"] = null;
+}
+
+<style>
+    .favorite-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        transition: color 0.3s ease;
+        display: none;
+        z-index: 15;
+    }
+
+    .movie-card:hover .favorite-icon {
+        display: block;
+    }
+
+    .favorite-icon.favorited {
+        color: #e0245e;
+    }
+    /* Genel Stiller */
+    .movie-page {
+        padding-top: 2rem;
+        background-color: #121212;
+        min-height: 100vh;
+    }
+
+    /* Başlık ve Filtre Alanı */
+    .header-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        padding: 0 15px;
+    }
+
+    .page-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        color: #28a745;
+        text-align: center;
+        margin: 0;
+        padding: 0.5rem 0;
+        position: relative;
+        display: inline-block;
+    }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #28a745, transparent);
+        }
+
+    /* Filtre Butonu */
+    .filter-button {
+        position: absolute;
+        left: 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        font-size: 1rem;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+    }
+
+        .filter-button:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+    /* Filtre Paneli */
+    #filterPanel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-out;
+        background-color: #1e1e1e;
+        border-radius: 8px;
+        margin: 0 15px 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+        #filterPanel.open {
+            max-height: 500px;
+            padding: 20px;
+            border: 1px solid #28a745;
+        }
+
+    #filterForm {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        color: #28a745;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .filter-input {
+        height: 40px;
+        border-radius: 6px;
+        border: 1px solid #343a40;
+        background-color: #2d2d2d;
+        color: white;
+        padding: 0 15px;
+        transition: all 0.3s;
+    }
+
+        .filter-input:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+            outline: none;
+        }
+
+    .apply-btn {
+        height: 40px;
+        background-color: #28a745;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-weight: 500;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .apply-btn:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+    /* Film Kartları */
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+        padding: 0 15px;
+    }
+
+    .movie-card {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        aspect-ratio: 2/3;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+    .movie-poster {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .movie-card:hover .movie-poster {
+        transform: scale(1.05);
+    }
+
+    .movie-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 15px;
+        background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        color: white;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .movie-card:hover .movie-info {
+        transform: translateY(0);
+    }
+
+    .movie-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 0.95rem;
+    }
+
+    .movie-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+
+    .movie-rating {
+        color: #ffc107;
+    }
+
+    /* Responsive Ayarlar */
+    @@media (max-width: 768px) {
+        .header-container {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .filter-button {
+            position: relative;
+            left: auto;
+            margin-bottom: 10px;
+        }
+
+        #filterForm {
+            grid-template-columns: 1fr;
+        }
+
+        .movie-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+    }
+</style>
+
+<div class="movie-page">
+    <div class="header-container">
+        <button id="filterToggleBtn" type="button" class="filter-button">
+            <i class="fas fa-filter"></i> Filtrele
+        </button>
+        <h2 class="page-title">🎬 Popüler Filmler</h2>
+    </div>
+
+    <div id="filterPanel">
+        <form id="filterForm">
+            <div class="filter-group">
+                <label for="searchInput" class="filter-label">Film Adı</label>
+                <input type="text" id="searchInput" class="filter-input" placeholder="Ara...">
+            </div>
+
+            <div class="filter-group">
+                <label for="genreInput" class="filter-label">Tür</label>
+                <select id="genreInput" class="filter-input">
+                    <option value="">Tümü</option>
+                    <option value="Aksiyon">Aksiyon</option>
+                    <option value="Dram">Dram</option>
+                    <option value="Komedi">Komedi</option>
+                    <option value="Bilim Kurgu">Bilim Kurgu</option>
+                    <option value="Korku">Korku</option>
+                    <option value="Romantik">Romantik</option>
+                    <option value="Animasyon">Animasyon</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="yearInput" class="filter-label">Yıl</label>
+                <select id="yearInput" class="filter-input">
+                    <option value="">Tümü</option>
+                    <option value="before1980">1980 Öncesi</option>
+                    @for (int year = 1981; year <= DateTime.Now.Year; year++)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="ratingInput" class="filter-label">Minimum Puan</label>
+                <select id="ratingInput" class="filter-input">
+                    <option value="">Tümü</option>
+                    <option value="9">9+</option>
+                    <option value="8">8+</option>
+                    <option value="7">7+</option>
+                    <option value="6">6+</option>
+                    <option value="5">5+</option>
+                </select>
+            </div>
+
+            <button type="button" class="apply-btn" onclick="applyFilters()">
+                <i class="fas fa-check"></i> Uygula
+            </button>
+        </form>
+
+    </div>
+
+    <div class="movie-grid">
+        @foreach (var item in Model)
+        {
+            var movie = item.Movie;
+            var isFavorited = item.IsFavorited;
+            <a href="@Url.Action("Details", "Movie", new { id = movie.Id })" class="movie-card" data-movieid="@movie.Id">
+                <img src="@( !string.IsNullOrEmpty(movie.PosterUrl) ? movie.PosterUrl : "/images/default-poster.jpg" )"
+                     alt="@movie.Title" class="movie-poster" />
+                <i class="favorite-icon @(isFavorited ? "favorited" : "") fas fa-heart"></i>
+                <div class="movie-info">
+                    <div class="movie-title">@movie.Title</div>
+                    <div class="movie-meta">
+                        <span>@movie.ReleaseDate.Year</span>
+                        <span class="movie-rating">
+                            <i class="fas fa-star"></i> @movie.Rating.ToString("0.0")
+                        </span>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+
+<script>
+    // Filtre paneli aç/kapa
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    const filterPanel = document.getElementById('filterPanel');
+
+    filterToggleBtn.addEventListener('click', () => {
+        filterPanel.classList.toggle('open');
+        const icon = filterToggleBtn.querySelector('i');
+        if (filterPanel.classList.contains('open')) {
+            icon.classList.replace('fa-filter', 'fa-times');
+        } else {
+            icon.classList.replace('fa-times', 'fa-filter');
+        }
+    });
+
+    // Filtre uygula
+    function applyFilters() {
+        const search = document.getElementById('searchInput').value.trim();
+        const genre = document.getElementById('genreInput').value.trim();
+        const year = document.getElementById('yearInput').value.trim();
+        const rating = document.getElementById('ratingInput').value;
+
+        let queryParams = [];
+
+        if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
+        if (genre) queryParams.push(`genre=${encodeURIComponent(genre)}`);
+        if (year) queryParams.push(`year=${encodeURIComponent(year)}`);
+        if (rating) queryParams.push(`rating=${encodeURIComponent(rating)}`);
+
+        const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+
+        // Filtre panelini kapat
+        filterPanel.classList.remove('open');
+        filterToggleBtn.querySelector('i').classList.replace('fa-times', 'fa-filter');
+
+        // Sayfayı yeniden yükle
+        window.location.href = '@Url.Action("Index", "Movie")' + queryString;
+    }
+
+    // Enter tuşu ile filtreleme
+    document.querySelectorAll('.filter-input').forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+    });
+
+     document.querySelectorAll('.favorite-icon').forEach(icon => {
+        icon.addEventListener('click', async function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const movieCard = this.closest('.movie-card');
+            const movieId = movieCard.getAttribute('data-movieid');
+
+    const response = await fetch(`@Url.Action("ToggleFavorite", "Movie")?id=${movieId}`, {
+        method: 'POST',
+        headers: { 'RequestVerificationToken': getToken() }
+    });
+
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.isFavorite) {
+                    this.classList.add('favorited');
+                } else {
+                    this.classList.remove('favorited');
+                }
+            } else if (response.status === 401) {
+                alert('Lütfen giriş yapın.');
+            }
+        });
+    });
+
+    function getToken() {
+        return document.querySelector('input[name="__RequestVerificationToken"]').value;
+    }
+</script>

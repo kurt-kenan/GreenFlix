@@ -1,0 +1,24 @@
+﻿@model GreenFlix.Models.Users
+
+@{
+    ViewData["Title"] = "Profil";
+}
+
+<h2>Profilim</h2>
+
+<div class="card p-4 bg-secondary text-light rounded" style="max-width: 500px;">
+    <div class="mb-3">
+        <label class="form-label">Kullanıcı Adı</label>
+        <input type="text" class="form-control" value="@Model.Username" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">E-posta</label>
+        <input type="email" class="form-control" value="@Model.Email" readonly />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Admin Mi?</label>
+        <input type="text" class="form-control" value="@(Model.IsAdmin ? "Evet" : "Hayır")" readonly />
+    </div>
+</div>
