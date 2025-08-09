@@ -20,18 +20,18 @@ GreenFlix, ASP.NET Core MVC ile geliştirilmiş bir film kataloğu uygulamasıd�
 
 ## 🖼️ Ekran Görüntüleri
 ![1](GreenFlix/1.PNG)
-![2](GreenFlix/2.png)
-![3](GreenFlix/3.png)
-![4](GreenFlix/4.png)
-![5](GreenFlix/5.png)
-![6](GreenFlix/6.png)
-![7](GreenFlix/7.png)
-![8](GreenFlix/8.png)
-![9](GreenFlix/9.png)
-![10](GreenFlix/10.png)
-![11](GreenFlix/11.png)
-![12](GreenFlix/12.png)
-![13](GreenFlix/13.png)
+![2](GreenFlix/2.PNG)
+![3](GreenFlix/3.PNG)
+![4](GreenFlix/4.PNG)
+![5](GreenFlix/5.PNG)
+![6](GreenFlix/6.PNG)
+![7](GreenFlix/7.PNG)
+![8](GreenFlix/8.PNG)
+![9](GreenFlix/9.PNG)
+![10](GreenFlix/10.PNG)
+![11](GreenFlix/11.PNG)
+![12](GreenFlix/12.PNG)
+![13](GreenFlix/13.PNG)
 
 ---
 
